@@ -26,8 +26,14 @@ class DriverTableViewController: UITableViewController, CLLocationManagerDelegat
         locationManager.startUpdatingLocation()
 
         Database.database().reference().child("RideRequests").observe(.childAdded) { (snapshot) in
-            self.rideRequests.append(snapshot)
-            self.tableView.reloadData()
+            if let rideRequestDictionary = snapshot.value as? [String:AnyObject] {
+                if let driverLat = rideRequestDictionary["driverLat"] as? Double {
+                } else {
+                    self.rideRequests.append(snapshot)
+                    self.tableView.reloadData()
+                }
+            }
+            
         }
         
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timer) in
@@ -69,9 +75,7 @@ class DriverTableViewController: UITableViewController, CLLocationManagerDelegat
                         cell.textLabel?.text = "\(email) - \(roundedDistance)km away"
                     }
                 }
-//                cell.textLabel?.text = email
             }
-            
         }
         return cell
     }
